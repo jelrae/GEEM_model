@@ -1,0 +1,9 @@
+.venv/*
+.idea/*
+*/__pycache__*
+GEEM_model/data/*
+*.pkl
+*.png
+*__pycache__
+*.pyc
+*.gif
