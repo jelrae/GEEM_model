@@ -7,8 +7,7 @@ def make_params_to_fit(leaf_g_fw):
 
     # In units of micro moles, should be in the same range as the metabolites themselves according to evolution
     lb_km_val = 1e-3
-    ub_km_val = 10
-    ub_km_val = 500
+    ub_km_val = 500 # The highest pred AI value was 200, so doing a bit over double that
     k_m_vals = (lb_km_val, ub_km_val)
 
     # In units of mol/h-gFW originally, then transformed into micro moles /h

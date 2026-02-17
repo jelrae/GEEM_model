@@ -1,17 +1,14 @@
 def make_params_to_fit(leaf_g_fw):
 
-    # From the AI predictions in 1/hr
-    kc_ai = [250.77, 245.82, 1139.04, 928.03, 563.13, 429.62, 1039.98, 195.11, 187.05, 295.31, 283.12, 260.32]
+    # rates here taken from table from 2024 LR enyzme, origionally in 1/s now in 1/hr
+    lb_kc_val = 0.0010 * 3600  # s/hr conversion
+    ub_kc_val = 50 * 3600 # The highest I see in the plant is 47
+    k_cat_vals = (lb_kc_val, ub_kc_val)
+
     # In units of micro moles, should be in the same range as the metabolites themselves according to evolution
-    km_ai = [5.3, 5.30, 6.36, 6.36, 6.09, 6.09, 5.93, 42.83, 114.10, 38.83, 130.10, 50.68]
-
-    lb_kc = [kc_i*1e-1 for kc_i in kc_ai]
-    ub_kc = [kc_i*1e1 for kc_i in kc_ai]
-    k_cat_vals = [lb_kc, ub_kc]
-
-    lb_km = [km_i*1e-1 for km_i in km_ai]
-    ub_km = [km_i*1e1 for km_i in km_ai]
-    k_m_vals = [lb_km, ub_km]
+    lb_km_val = 1e-3
+    ub_km_val = 10
+    k_m_vals = (lb_km_val, ub_km_val)
 
     # In units of mol/h-gFW originally, then transformed into micro moles /h
     v_synth_lb = 9.5e-13 * leaf_g_fw * 1e6
