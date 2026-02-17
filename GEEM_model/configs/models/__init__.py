@@ -1,4 +1,6 @@
 # configs/__init__.py
-from . import full_indole_model_variable_enzyme
+from . import (full_indole_model_variable_enzyme,
+               full_indole_model_variable_enzyme_AI_Kinetics)
 
-__all__ = ["full_indole_model_variable_enzyme"]
+__all__ = ["full_indole_model_variable_enzyme",
+           "full_indole_model_variable_enzyme_AI_Kinetics",]
