@@ -22,14 +22,14 @@ def create_dirs(fps):
         print("The directory " + p + " is created!")
 
 
-def load_param(fp):
+def load_params(fp):
     with open(fp, 'rb') as file:
         ep = pickle.load(file)
     return ep
 
 
-def save_params(fp, fn, p):
+def save_params(fp, p):
     print("Current working directory:", os.getcwd())
     create_dirs([fp])
-    with open(fp + "/" + fn, "wb") as pickie:
+    with open(fp, "wb") as pickie:
         pickle.dump(p, pickie)
