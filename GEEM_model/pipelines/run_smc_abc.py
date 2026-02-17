@@ -33,7 +33,8 @@ def run_pipeline(
     # --- Experiment ---
     exp = experiment_builder.build_control_meja_experiment(
         data_path,
-        model_spec.MRNA_DICT
+        model_spec.MRNA_DICT,
+        model_spec.META_DICT.values(),
     )
 
     model_conditions = exp["model_conditions"]

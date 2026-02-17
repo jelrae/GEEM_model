@@ -5,14 +5,7 @@ from GEEM_model.data import indole_data_loaders
 from GEEM_model.configs.fitting.fitting_params_config.full_model_full_fit_wide_bounds import make_params_to_fit
 
 
-def build_control_meja_experiment(data_path, mrna_dictionary):
-    glucs_to_fit = [
-        '3-indolylmthyl GLS glucobrassicin',
-        '1-hydroxy-3-indolylmethyl GSL',
-        '1-methoxy-3-indolylmethyl GSL',
-        '4-hydroxy-3-indolylmethyl GSL',
-        '4-methoxy-3-indolylmethyl GSL'
-    ]
+def build_control_meja_experiment(data_path, mrna_dictionary, glucs_to_fit):
 
     # Load in the control conditions
     meta_data = indole_data_loaders.load_and_process_indole_data_metabolomics(
