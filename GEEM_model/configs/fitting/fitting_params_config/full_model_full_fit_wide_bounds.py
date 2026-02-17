@@ -18,7 +18,7 @@ def make_params_to_fit(leaf_g_fw):
     # In units of 1/day originally then transformed into 1/hour
     kde_lb = 0.05 / 24  # low from secondary metabolism
     kde_ub = 0.5 / 24  # High from stress
-    kds_vals = (kde_lb, kde_ub)
+    kde_vals = (kde_lb, kde_ub)
 
     PARAMS_TO_FIT = {
         'k_cat': [{
@@ -66,7 +66,7 @@ def make_params_to_fit(leaf_g_fw):
             4: 35,
             5: 36,
             6: 37,
-        }, kds_vals, 'uniform']
+        }, kde_vals, 'uniform']
     }
 
     return PARAMS_TO_FIT

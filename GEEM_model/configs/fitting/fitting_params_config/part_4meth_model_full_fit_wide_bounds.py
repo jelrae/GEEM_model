@@ -2,12 +2,12 @@ def make_params_to_fit(leaf_g_fw):
 
     # rates here taken from table from 2024 LR enyzme, origionally in 1/s now in 1/hr
     lb_kc_val = 0.0010 * 3600  # s/hr conversion
-    ub_kc_val = 50 * 3600 # The highest I see in the plant is 47
+    ub_kc_val = 500 * 3600  # The highest pred AI value was 200, so doing a bit over double that
     k_cat_vals = (lb_kc_val, ub_kc_val)
 
     # In units of micro moles, should be in the same range as the metabolites themselves according to evolution
     lb_km_val = 1e-3
-    ub_km_val = 10
+    ub_km_val = 500 # The highest pred AI value was 200, so doing a bit over double that
     k_m_vals = (lb_km_val, ub_km_val)
 
     # In units of mol/h-gFW originally, then transformed into micro moles /h
@@ -27,45 +27,27 @@ def make_params_to_fit(leaf_g_fw):
             2: 2,
             3: 3,
             4: 4,
-            5: 5,
-            6: 6,
-            7: 7,
-            8: 8,
-            9: 9,
-            10: 10,
-            11: 11,
         }, k_cat_vals, 'log-uniform'],
         'km': [{
-            0: 12,
-            1: 13,
-            2: 14,
-            3: 15,
-            4: 16,
-            5: 17,
-            6: 18,
-            7: 19,
-            8: 20,
-            9: 21,
-            10: 22,
-            11: 23,
+            0: 5,
+            1: 6,
+            2: 7,
+            3: 8,
+            4: 9,
         }, k_m_vals, 'log-uniform'],
         'v_synth_rates': [{
-            0: 24,
-            1: 25,
-            2: 26,
-            3: 27,
-            4: 28,
-            5: 29,
-            6: 30,
+            0: 10,
+            1: 11,
+            2: 12,
+            3: 13,
+            4: 14,
         }, v_synth_vals, 'log-uniform'],
         'enzyme_degradation_rates': [{
-            0: 31,
-            1: 32,
-            2: 33,
-            3: 34,
-            4: 35,
-            5: 36,
-            6: 37,
+            0: 15,
+            1: 16,
+            2: 17,
+            3: 18,
+            4: 19,
         }, kde_vals, 'uniform']
     }
 
