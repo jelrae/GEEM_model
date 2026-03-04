@@ -3,20 +3,117 @@ import seaborn as sns
 import numpy as np
 from scipy.integrate import solve_ivp
 import pandas as pd
+from GEEM_model.utils import io as GEEM_io
+
+import matplotlib as mpl
+
+# ── PLOS Computational Biology figure standards ──────────────────────────────
+# Single column: 5.2 in (13.2 cm) | Full page: 7.5 in (19.05 cm)
+# Resolution: 300–600 dpi | Font: Arial 8–12pt | Format: TIFF
+
+PLOS_SINGLE_COL_WIDTH = 5.2   # inches
+PLOS_FULL_PAGE_WIDTH  = 7.5   # inches
+PLOS_MAX_HEIGHT       = 8.75  # inches
+PLOS_DPI              = 300   # use 600 for figures with many small elements
 
 
-def plot_set_formating(SMALL_SIZE=12, MEDIUM_SIZE=15, BIGGER_SIZE=20, BIGGEST_SIZE=27):
-    plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
-    plt.rc('axes', titlesize=BIGGER_SIZE)  # fontsize of the axes title
-    plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
-    plt.rc('xtick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
-    plt.rc('ytick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
-    plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
-    plt.rc('figure', titlesize=BIGGEST_SIZE)  # fontsize of the figure title
+def get_plos_figsize(column="single", aspect_ratio=0.75, n_panels_vertical=1):
+    """
+    Returns a (width, height) tuple conforming to PLOS CompBiol figure rules.
+
+    Parameters
+    ----------
+    column : str
+        "single" (≤5.2 in, aligns with text column) or
+        "double" (full page width, 7.5 in)
+    aspect_ratio : float
+        Height as a fraction of width. Default 0.75 works well for
+        line/violin plots. Increase for taller figures.
+    n_panels_vertical : int
+        Number of stacked panels. Scales height accordingly.
+    """
+    width = PLOS_SINGLE_COL_WIDTH if column == "single" else PLOS_FULL_PAGE_WIDTH
+    height = min(width * aspect_ratio * n_panels_vertical, PLOS_MAX_HEIGHT)
+    return (width, height)
+
+
+def set_plos_style():
+    """
+    Sets global matplotlib/seaborn style to comply with PLOS figure requirements.
+    Call once at the top of your script.
+    """
+    sns.set_theme(style="ticks")  # clean base; avoids heavy gridlines
+
+    mpl.rcParams.update({
+        # ── Fonts ─────────────────────────────────────────────────────────────
+        "font.family":        "Arial",
+        "font.size":          9,        # safe default within 8–12pt range
+        "axes.titlesize":     10,
+        "axes.labelsize":     9,
+        "xtick.labelsize":    8,
+        "ytick.labelsize":    8,
+        "legend.fontsize":    8,
+
+        # ── Lines & ticks ─────────────────────────────────────────────────────
+        "axes.linewidth":     0.8,
+        "xtick.major.width":  0.8,
+        "ytick.major.width":  0.8,
+        "lines.linewidth":    1.2,      # clean for line plots at small sizes
+
+        # ── Layout ────────────────────────────────────────────────────────────
+        "figure.dpi":         300,
+        "savefig.dpi":        300,
+        "figure.autolayout":  True,     # prevents label clipping on save
+
+        # ── Output ────────────────────────────────────────────────────────────
+        "savefig.format":     "tiff",
+        "savefig.bbox":       "tight",  # removes excess whitespace on save
+        "figure.facecolor":   "white",
+        "axes.facecolor":     "white",
+    })
+
+
+def save_plos_figure(fig, filename, dpi=PLOS_DPI):
+    """
+    Saves a figure as a TIFF with a 2pt white border, per PLOS requirements.
+
+    Parameters
+    ----------
+    fig : matplotlib Figure object
+    filename : str
+        Output filename. '.tiff' will be appended if not present.
+    dpi : int
+        300 for most plots; use 600 for dense/small-text figures.
+    """
+    if not filename.endswith(".tiff"):
+        filename += ".tiff"
+    fig.savefig(
+        filename,
+        dpi=dpi,
+        format="tiff",
+        bbox_inches="tight",
+        pad_inches=0.028,   # ~2pt white border (2pt / 72pt per inch ≈ 0.028)
+        facecolor="white"
+    )
+    print(f"Saved: {filename} at {dpi} dpi")
+
+
+# ── Call this once at the top of your script ─────────────────────────────────
+set_plos_style()
+
+
+# def plot_set_formating(SMALL_SIZE=12, MEDIUM_SIZE=15, BIGGER_SIZE=20, BIGGEST_SIZE=27):
+#     plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
+#     plt.rc('axes', titlesize=BIGGER_SIZE)  # fontsize of the axes title
+#     plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+#     plt.rc('xtick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+#     plt.rc('ytick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+#     plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
+#     plt.rc('figure', titlesize=BIGGEST_SIZE)  # fontsize of the figure title
 
 
 def plotting_with_model(unfit_model, synth_model, t_sim, t_eval):
-    plot_set_formating()
+    # set_plos_style()
     t_range_eval = np.arange(t_sim[0], t_sim[1], 1)
     subs_dict = unfit_model.metabolite_dictionary
 
@@ -67,7 +164,7 @@ def plotting_with_model(unfit_model, synth_model, t_sim, t_eval):
 
 
 def plotting_with_data(unfit_model, yt, t_sim, t_eval, fig_dir, filename, save_figs=False):
-    plot_set_formating()
+    # set_plos_style()
     t_range_eval = np.arange(t_sim[0], t_sim[1], 1)
     subs_dict = unfit_model.metabolite_dictionary
 
@@ -111,7 +208,7 @@ def plotting_with_data(unfit_model, yt, t_sim, t_eval, fig_dir, filename, save_f
     }
     sns.lineplot(data=synth_df, x='Time', y='Concentration', hue='Metabolite', palette=palette)
     if save_figs:
-        create_dirs([fig_dir])
+        GEEM_io.create_dirs([fig_dir])
         plt.savefig(fig_dir+filename+'_fig.png')
         plt.close()
     else:
@@ -120,7 +217,7 @@ def plotting_with_data(unfit_model, yt, t_sim, t_eval, fig_dir, filename, save_f
 
 def distribution_plotting_with_data(unfit_model, yt, t_sim, t_eval, pdf, smc_params, fig_dir=None, filename=None,
                                     num_sims=1000, exp_conds='Control', save_figs=False, sample_df=None):
-    plot_set_formating()
+    # set_plos_style()
     if exp_conds == 'control':
         exp_conds='Mock'
     elif exp_conds == 'meJA':
@@ -221,7 +318,7 @@ def distribution_plotting_with_data(unfit_model, yt, t_sim, t_eval, pdf, smc_par
     else:
         plt.title(f'Glucosinolates over Time {exp_conds}')
     if save_figs:
-        create_dirs([fig_dir])
+        GEEM_io.create_dirs([fig_dir])
         plt.savefig(fig_dir+filename+'_m_many.png')
         plt.close()
     else:
@@ -254,7 +351,7 @@ def distribution_plotting_with_data(unfit_model, yt, t_sim, t_eval, pdf, smc_par
         else:
             plt.title(f'Glucosinolates over Time {exp_conds}')
         if save_figs:
-            create_dirs([fig_dir])
+            GEEM_io.create_dirs([fig_dir])
             plt.savefig(fig_dir+filename+'_e_many.png')
             plt.close()
         else:
@@ -263,7 +360,7 @@ def distribution_plotting_with_data(unfit_model, yt, t_sim, t_eval, pdf, smc_par
 
 def distribution_plotting_enzyme(unfit_model, yt, t_sim, t_eval, pdf, smc_params, fig_dir=None, filename=None,
                                     num_sims=1000, exp_conds='Control', save_figs=False):
-    plot_set_formating()
+    # set_plos_style()
     t_range_eval = np.arange(t_sim[0], t_sim[1], 1)
     subs_dict = unfit_model.metabolite_dictionary
     experiment_data = pd.DataFrame(yt.T, index=t_eval, columns=list(subs_dict.values())[1:])
@@ -328,7 +425,7 @@ def distribution_plotting_enzyme(unfit_model, yt, t_sim, t_eval, pdf, smc_params
 
     sns.lineplot(data=synth_df, x='Time', y='Concentration', hue='Metabolite', palette=palette, errorbar=('sd'), estimator='mean')
     if save_figs:
-        create_dirs([fig_dir])
+        GEEM_io.create_dirs([fig_dir])
         plt.savefig(fig_dir+filename+'_manyshots_fig.png')
         plt.close()
     else:
